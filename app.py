@@ -12,7 +12,7 @@ translations = {
     "English": {
         "title": "🗺️ Ultimate City Travel Guide & Planner",
         "subtitle": "Plan your custom itinerary, track expenses visually, and pack smart!",
-        "lang_select": "🌐 Select Language / भाषा चुनें / భాషను ఎంచుకోండి",
+        "lang_select": "🌐 Select Language / भाषा चुनें / భాషను ఎంచుకోండి / Seleccionar idioma",
         "preferences": "⚙️ Travel Preferences",
         "style": "Select Travel Style:",
         "currency_lbl": "Preferred Currency Display:",
@@ -75,7 +75,7 @@ translations = {
         "title": "🗺️ అల్టిమేట్ సిటీ ట్రావెల్ గైడ్ & ప్లానర్",
         "subtitle": "మీ అనుకూల ప్రయాణ ప్రణాళికను సిద్ధం చేసుకోండి, ఖర్చులను చూడండి మరియు స్మార్ట్‌గా ప్యాక్ చేయండి!",
         "lang_select": "🌐 భాషను ఎంచుకోండి",
-        "preferences": "⚙️ ప్రయాణ प्राధాన్యతలు",
+        "preferences": "⚙️ ప్రయాణ ప్రాధాన్యతలు",
         "style": "ప్రయాణ శైలిని ఎంచుకోండి:",
         "currency_lbl": "కరెన్సీ ప్రదర్శన:",
         "dest_lbl": "మీ గమ్యస్థానాన్ని ఎంచుకోండి:",
@@ -101,6 +101,37 @@ translations = {
         "byok_key_lbl": "మీ OpenAI API కీని నమోదు చేయండి:",
         "ollama_url_lbl": "ఒల్లామా లోకల్ హోస్ట్ URL:",
         "ollama_model_lbl": "లోకల్ మోడల్ పేరు:"
+    },
+    "Spanish": {
+        "title": "🗺️ Guía y Planificador Definitivo de Viajes",
+        "subtitle": "¡Planifique su itinerario personalizado, realice un seguimiento visual de los gastos y empaque de manera inteligente!",
+        "lang_select": "🌐 Seleccionar idioma",
+        "preferences": "⚙️ Preferencias de viaje",
+        "style": "Seleccione el estilo de viaje:",
+        "currency_lbl": "Moneda preferida:",
+        "dest_lbl": "Elija su destino:",
+        "exploring": "## 📍 Explorando: {city} (Modo {mode})",
+        "attractions": "🌟 Principales atracciones",
+        "delicacies": "🍛 Delicias locales para probar",
+        "weather": "📅 Mejor época y consejos climáticos",
+        "budget_title": "💰 Estimador de presupuesto inteligente",
+        "days": "Número de días:",
+        "hotel": "Costo de hotel por noche:",
+        "food_lbl": "Comida diaria y actividades:",
+        "stay_exp": "Gastos de estancia",
+        "food_exp": "Comida y actividad",
+        "total_exp": "Costo total estimado",
+        "pack_title": "🎒 Lista de equipaje antes del viaje",
+        "journal_title": "📝 Diario de viaje de la comunidad",
+        "post_btn": "Publicar nota",
+        "ai_title": "🤖 Asistente de viaje con IA",
+        "ai_prompt_lbl": "Pregúntele al compañero de IA lo que sea sobre la planificación de su viaje a {city}:",
+        "ai_btn": "Generar información personalizada de IA",
+        "ai_setup": "🤖 Configuración del motor de IA",
+        "ai_mode_lbl": "Seleccione el modo de ejecución de la arquitectura de IA:",
+        "byok_key_lbl": "Ingrese su clave API de OpenAI:",
+        "ollama_url_lbl": "URL del endpoint local de Ollama:",
+        "ollama_model_lbl": "Nombre del modelo local de destino:"
     }
 }
 
@@ -143,7 +174,7 @@ def query_ai_engine(mode, prompt, api_key, ollama_url, ollama_model):
 # ==========================================
 # 🎛️ SIDEBAR CONTROL BAR
 # ==========================================
-selected_lang = st.sidebar.selectbox(translations["English"]["lang_select"], ["English", "Hindi", "Telugu"])
+selected_lang = st.sidebar.selectbox(translations["English"]["lang_select"], ["English", "Hindi", "Telugu", "Spanish"])
 lang = translations[selected_lang]
 
 st.sidebar.divider()
