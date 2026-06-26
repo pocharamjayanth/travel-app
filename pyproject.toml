@@ -1,12 +1,9 @@
-﻿[tool.ruff]
+[tool.ruff]
 line-length = 88
-target-version = "py311"
-select = ["E", "F", "B", "I", "UP", "PL"]
 
 [tool.ruff.lint]
-select = ["UP"]
+select = ["E", "F", "I"]
 
 [tool.vulture]
 min_confidence = 80
 paths = ["app.py"]
-exclude = [".venv", "venv"]
