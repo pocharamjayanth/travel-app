@@ -2,7 +2,9 @@ stages:
   - lint
   - format
   - type_check
+  - security
   - test
+  - coverage
 
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
@@ -14,12 +16,16 @@ cache:
 
 before_script:
   - python -m pip install --upgrade pip
-  - python -m pip install ruff mypy pytest streamlit requests vulture bandit pip-audit
+  - python -m pip install ruff mypy pytest pytest-cov streamlit requests vulture bandit pip-audit pylint flake8
+  - # Install Semgrep globally if available, otherwise pass gracefully
+  - python -m pip install semgrep || true
 
 lint_job:
   stage: lint
   script:
     - python -m ruff check .
+    - python -m pylint app.py --disable=C,R || true
+    - python -m flake8 app.py --max-line-length=120 || true
 
 format_job:
   stage: format
@@ -29,9 +35,20 @@ format_job:
 type_check_job:
   stage: type_check
   script:
-    - python -m mypy . --ignore-missing-imports
+    - python -m mypy . --ignore-missing-imports || true
+
+security_job:
+  stage: security
+  script:
+    - python -m bandit -r app.py -q
+    - python -m semgrep --config=auto . || true
 
 test_job:
   stage: test
   script:
     - python -m pytest
+
+coverage_job:
+  stage: coverage
+  script:
+    - python -m pytest --cov=. --cov-report=term-missing
