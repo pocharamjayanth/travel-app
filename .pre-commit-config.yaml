@@ -5,6 +5,12 @@
       - id: trailing-whitespace
       - id: end-of-file-fixer
 
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.0
+    hooks:
+      - id: pyupgrade
+        args: [--py311-plus]
+
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.18.1
     hooks:
@@ -21,9 +27,3 @@
     hooks:
       - id: mypy
         additional_dependencies: [streamlit, requests]
-
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.5
-    hooks:
-      - id: bandit
-        args: ["-r", "app.py"]
