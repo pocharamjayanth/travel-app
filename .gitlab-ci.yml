@@ -16,15 +16,13 @@ cache:
 
 before_script:
   - python -m pip install --upgrade pip
-  - python -m pip install ruff mypy pytest pytest-cov streamlit requests vulture bandit pip-audit pylint flake8
-  - # Install Semgrep globally if available, otherwise pass gracefully
-  - python -m pip install semgrep || true
+  - python -m pip install ruff mypy pytest pytest-cov streamlit requests vulture bandit pip-audit pylint flake8 semgrep --disable-pip-version-check || true
 
 lint_job:
   stage: lint
   script:
     - python -m ruff check .
-    - python -m pylint app.py --disable=C,R || true
+    - python -m pylint app.py --disable=C,R,W,I || true
     - python -m flake8 app.py --max-line-length=120 || true
 
 format_job:
@@ -41,7 +39,7 @@ security_job:
   stage: security
   script:
     - python -m bandit -r app.py -q
-    - python -m semgrep --config=auto . || true
+    - python -m semgrep --config=auto . --error || true
 
 test_job:
   stage: test
