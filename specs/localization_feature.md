@@ -1,4 +1,5 @@
-﻿# Feature Spec: Multi-Lingual Optimization
+﻿# Feature Spec: Multi-Lingual Interface
+
 ## Objective
-Deliver instant UI string transformation across regional languages.
+Deliver localization mapping matrices across English, Hindi, Telugu, and Spanish.
 

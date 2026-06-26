@@ -1,3 +1,4 @@
 ﻿# Spec-Driven Architecture Constitution
-All features must originate as technical specification items within the specs/ node.
+
+All application components must align with specifications documented in this directory.
 
