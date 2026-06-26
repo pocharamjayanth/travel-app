@@ -1,0 +1,19 @@
+﻿stages:
+  - test
+  - security
+
+run_tests:
+  stage: test
+  image: python:3.11-slim
+  script:
+    - pip install streamlit requests
+    - python -m unittest test_app.py
+
+security_audit:
+  stage: security
+  image: python:3.11-slim
+  script:
+    - pip install bandit pip-audit
+    - bandit -r app.py
+    - pip-audit --allow-empty
+  allow_failure: true
