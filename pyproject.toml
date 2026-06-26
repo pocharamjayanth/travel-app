@@ -1,13 +1,13 @@
 ﻿[tool.ruff]
 line-length = 88
 target-version = "py311"
-# E/F handles Flake8, UP handles Pyupgrade, B handles Bandit/basic checks
-select = ["E", "F", "B", "I", "UP", "PL"] 
+# UP enables pyupgrade checks natively within Ruff
+select = ["E", "F", "B", "I", "UP", "PL"]
+
+[tool.vulture]
+min_confidence = 80
+paths = ["app.py"]
+exclude = [".venv", "venv"]
 
 [tool.pylint]
 max-line-length = 88
-disable = ["C0114", "C0115", "C0116"]
-
-[tool.mypy]
-python_version = "3.11"
-ignore_missing_imports = true
