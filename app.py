@@ -38,7 +38,7 @@ translations = {
         "ai_mode_lbl": "Select AI Architecture Execution Mode:",
         "byok_key_lbl": "Enter Your OpenAI API Key:",
         "ollama_url_lbl": "Ollama Local Host Endpoint URL:",
-        "ollama_model_lbl": "Target Local Model Name:"
+        "ollama_model_lbl": "Target Local Model Name:",
     },
     "Hindi": {
         "title": "🗺️ सर्वश्रेष्ठ शहर यात्रा गाइड और योजनाकार",
@@ -69,7 +69,7 @@ translations = {
         "ai_mode_lbl": "एआई आर्किटेक्चर निष्पादन मोड चुनें:",
         "byok_key_lbl": "अपना OpenAI API कुंजी दर्ज करें:",
         "ollama_url_lbl": "ओलामा लोकल होस्ट एंडपॉइंट URL:",
-        "ollama_model_lbl": "लक्षित स्थानीय मॉडल का नाम:"
+        "ollama_model_lbl": "लक्षित स्थानीय मॉडल का नाम:",
     },
     "Telugu": {
         "title": "🗺️ అల్టిమేట్ సిటీ ట్రావెల్ గైడ్ & ప్లానర్",
@@ -100,7 +100,7 @@ translations = {
         "ai_mode_lbl": "AI ఆర్కిటెక్చర్ మోడ్‌ను ఎంచుకోండి:",
         "byok_key_lbl": "మీ OpenAI API కీని నమోదు చేయండి:",
         "ollama_url_lbl": "ఒల్లామా లోకల్ హోస్ట్ URL:",
-        "ollama_model_lbl": "లోకల్ మోడల్ పేరు:"
+        "ollama_model_lbl": "లోకల్ మోడల్ పేరు:",
     },
     "Spanish": {
         "title": "🗺️ Guía y Planificador Definitivo de Viajes",
@@ -131,25 +131,25 @@ translations = {
         "ai_mode_lbl": "Seleccione el modo de ejecución de la arquitectura de IA:",
         "byok_key_lbl": "Ingrese su clave API de OpenAI:",
         "ollama_url_lbl": "URL del endpoint local de Ollama:",
-        "ollama_model_lbl": "Nombre del modelo local de destino:"
-    }
+        "ollama_model_lbl": "Nombre del modelo local de destino:",
+    },
 }
+
 
 # ==========================================
 # 🤖 UNIFIED AI GATEWAY INFRASTRUCTURE
 # ==========================================
 def query_ai_engine(mode, prompt, api_key, ollama_url, ollama_model):
-    payload = {
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.7
-    }
-    
+    payload = {"messages": [{"role": "user", "content": prompt}], "temperature": 0.7}
+
     if mode == "✨ Cloud API (BYOK - OpenAI)":
         if not api_key:
-            return "⚠️ Please supply a valid OpenAI API key in the configuration sidebar."
+            return (
+                "⚠️ Please supply a valid OpenAI API key in the configuration sidebar."
+            )
         headers = {
             "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
         url = "https://api.openai.com/v1/chat/completions"
         payload["model"] = "gpt-4o-mini"
@@ -161,7 +161,7 @@ def query_ai_engine(mode, prompt, api_key, ollama_url, ollama_model):
     try:
         response = requests.post(url, headers=headers, json=payload, timeout=30)
         if response.status_code == 200:
-            return response.json()['choices'][0]['message']['content']
+            return response.json()["choices"][0]["message"]["content"]
         else:
             return f"❌ API Error (Status Code {response.status_code}): {response.text}"
     except requests.exceptions.ConnectionError:
@@ -171,20 +171,27 @@ def query_ai_engine(mode, prompt, api_key, ollama_url, ollama_model):
     except Exception as e:
         return f"❌ Encountered unexpected runtime exception: {str(e)}"
 
+
 # ==========================================
 # 🎛️ SIDEBAR CONTROL BAR
 # ==========================================
-selected_lang = st.sidebar.selectbox(translations["English"]["lang_select"], ["English", "Hindi", "Telugu", "Spanish"])
+selected_lang = st.sidebar.selectbox(
+    translations["English"]["lang_select"], ["English", "Hindi", "Telugu", "Spanish"]
+)
 lang = translations[selected_lang]
 
 st.sidebar.divider()
 st.sidebar.header(lang["preferences"])
-travel_mode = st.sidebar.radio(lang["style"], ["🎒 Budget Friendly", "✨ Premium/Luxury"])
+travel_mode = st.sidebar.radio(
+    lang["style"], ["🎒 Budget Friendly", "✨ Premium/Luxury"]
+)
 currency = st.sidebar.selectbox(lang["currency_lbl"], ["INR (₹)", "USD ($)"])
 
 st.sidebar.divider()
 st.sidebar.header(lang["ai_setup"])
-ai_mode = st.sidebar.radio(lang["ai_mode_lbl"], ["🎒 Local Inference (Ollama)", "✨ Cloud API (BYOK - OpenAI)"])
+ai_mode = st.sidebar.radio(
+    lang["ai_mode_lbl"], ["🎒 Local Inference (Ollama)", "✨ Cloud API (BYOK - OpenAI)"]
+)
 
 api_key = ""
 ollama_url = "http://localhost:11434"
@@ -193,7 +200,9 @@ ollama_model = "llama3"
 if ai_mode == "✨ Cloud API (BYOK - OpenAI)":
     api_key = st.sidebar.text_input(lang["byok_key_lbl"], type="password")
 else:
-    ollama_url = st.sidebar.text_input(lang["ollama_url_lbl"], value="http://localhost:11434")
+    ollama_url = st.sidebar.text_input(
+        lang["ollama_url_lbl"], value="http://localhost:11434"
+    )
     ollama_model = st.sidebar.text_input(lang["ollama_model_lbl"], value="llama3")
 
 # ==========================================
@@ -204,52 +213,99 @@ st.write(lang["subtitle"])
 
 destination = st.selectbox(
     lang["dest_lbl"],
-    ["Select a city...", "Hyderabad", "Goa", "Delhi", "Mumbai", "Jaipur", "Kerala", "Paris", "Tokyo", "London", "New York"]
+    [
+        "Select a city...",
+        "Hyderabad",
+        "Goa",
+        "Delhi",
+        "Mumbai",
+        "Jaipur",
+        "Kerala",
+        "Paris",
+        "Tokyo",
+        "London",
+        "New York",
+    ],
 )
 
 if destination != "Select a city...":
     st.markdown(lang["exploring"].format(city=destination, mode=travel_mode))
-    
+
     col_left, col_right = st.columns(2)
     with col_left:
         with st.expander(lang["attractions"], expanded=True):
             if destination == "Hyderabad":
-                st.markdown("- **Charminar:** Historical 16th-century mosque.\n- **Golconda Fort:** Majestic diamond-trading hub ruins.\n- **Hussain Sagar Lake:** Giant Buddha statue.\n- **Salar Jung Museum:** Incredible antique collection.")
+                st.markdown(
+                    "- **Charminar:** Historical 16th-century mosque.\n- **Golconda Fort:** Majestic diamond-trading hub ruins.\n- **Hussain Sagar Lake:** Giant Buddha statue.\n- **Salar Jung Museum:** Incredible antique collection."
+                )
             elif destination == "Goa":
-                st.markdown("- **Baga Beach:** Nightlife and water sports.\n- **Dudhsagar Falls:** Four-tiered spectacular waterfall.")
+                st.markdown(
+                    "- **Baga Beach:** Nightlife and water sports.\n- **Dudhsagar Falls:** Four-tiered spectacular waterfall."
+                )
             elif destination == "Delhi":
-                st.markdown("- **India Gate:** Iconic war memorial arch.\n- **Red Fort:** Historic 17th-century Mughal fortress.\n- **Qutub Minar:** Tallest brick minaret.")
+                st.markdown(
+                    "- **India Gate:** Iconic war memorial arch.\n- **Red Fort:** Historic 17th-century Mughal fortress.\n- **Qutub Minar:** Tallest brick minaret."
+                )
             elif destination == "Mumbai":
-                st.markdown("- **Gateway of India:** Iconic arch monument.\n- **Marine Drive:** Stunning seaside promenade.")
+                st.markdown(
+                    "- **Gateway of India:** Iconic arch monument.\n- **Marine Drive:** Stunning seaside promenade."
+                )
             elif destination == "Jaipur":
-                st.markdown("- **Hawa Mahal:** Pink sandstone 'Palace of Winds'.\n- **Amer Fort:** Hilltop fort with mirror halls.")
+                st.markdown(
+                    "- **Hawa Mahal:** Pink sandstone 'Palace of Winds'.\n- **Amer Fort:** Hilltop fort with mirror halls."
+                )
             elif destination == "Kerala":
-                st.markdown("- **Alleppey Houseboats:** Coastal backwaters.\n- **Munnar Tea Gardens:** Mountain tea plantations.")
+                st.markdown(
+                    "- **Alleppey Houseboats:** Coastal backwaters.\n- **Munnar Tea Gardens:** Mountain tea plantations."
+                )
             else:
-                st.markdown(f"- Popular monuments and scenic spaces across {destination}.")
+                st.markdown(
+                    f"- Popular monuments and scenic spaces across {destination}."
+                )
 
     with col_right:
         with st.expander(lang["delicacies"], expanded=True):
             if destination == "Hyderabad":
-                st.write("🔥 Famous for: Hyderabadi Biryani, Haleem, Double Ka Meetha, Irani Chai.")
+                st.write(
+                    "🔥 Famous for: Hyderabadi Biryani, Haleem, Double Ka Meetha, Irani Chai."
+                )
             elif destination == "Goa":
                 st.write("🐟 Famous for: Goan Fish Curry, Bebinca (dessert).")
             elif destination == "Delhi":
-                st.write("🥞 Famous for: Hot Chole Bhature, Paranthas from Chandni Chowk, Butter Chicken.")
+                st.write(
+                    "🥞 Famous for: Hot Chole Bhature, Paranthas from Chandni Chowk, Butter Chicken."
+                )
             elif destination == "Mumbai":
                 st.write("🍔 Famous for: Spicy Vada Pav, Pav Bhaji, Bhel Puri.")
             elif destination == "Jaipur":
-                st.write("🍽️ Famous for: Traditional Dal Baati Churma, Pyaaz Kachori, Ghewar.")
+                st.write(
+                    "🍽️ Famous for: Traditional Dal Baati Churma, Pyaaz Kachori, Ghewar."
+                )
             elif destination == "Kerala":
-                st.write("🥥 Famous for: Soft Appam with Stew, Malabar Parotta with Curry.")
+                st.write(
+                    "🥥 Famous for: Soft Appam with Stew, Malabar Parotta with Curry."
+                )
             else:
-                st.write(f"🍏 Explore localized traditional food variations in {destination}.")
+                st.write(
+                    f"🍏 Explore localized traditional food variations in {destination}."
+                )
 
         with st.expander(lang["weather"]):
-            if destination in ["Hyderabad", "Goa", "Delhi", "Mumbai", "Jaipur", "Kerala"]:
-                st.info("❄️ **October to March:** Cool winter months are perfect for exploring smoothly.")
+            if destination in [
+                "Hyderabad",
+                "Goa",
+                "Delhi",
+                "Mumbai",
+                "Jaipur",
+                "Kerala",
+            ]:
+                st.info(
+                    "❄️ **October to March:** Cool winter months are perfect for exploring smoothly."
+                )
             else:
-                st.info("🌸 Pleasant seasonal windows are highly ideal for travel planning.")
+                st.info(
+                    "🌸 Pleasant seasonal windows are highly ideal for travel planning."
+                )
 
     st.divider()
 
@@ -259,15 +315,17 @@ if destination != "Select a city...":
     st.subheader(lang["ai_title"])
     ai_prompt = st.text_input(
         lang["ai_prompt_lbl"].format(city=destination),
-        value=f"Give me a quick 3-day travel itinerary checklist for a {travel_mode.lower()} trip to {destination}."
+        value=f"Give me a quick 3-day travel itinerary checklist for a {travel_mode.lower()} trip to {destination}.",
     )
-    
+
     if st.button(lang["ai_btn"]):
         with st.spinner("🧠 Querying AI Engine Inference Pipeline..."):
-            ai_response = query_ai_engine(ai_mode, ai_prompt, api_key, ollama_url, ollama_model)
+            ai_response = query_ai_engine(
+                ai_mode, ai_prompt, api_key, ollama_url, ollama_model
+            )
             st.markdown("### 💬 AI Travel Planner Response:")
             st.write(ai_response)
-            
+
     st.divider()
 
     # Budget Estimator
@@ -281,18 +339,22 @@ if destination != "Select a city...":
     with b_col3:
         default_food = 1000 if "Budget" in travel_mode else 3000
         daily_food = st.number_input(lang["food_lbl"], min_value=0, value=default_food)
-    
+
     total_stay = hotel_cost * days
     total_food = daily_food * days
     grand_total = total_stay + total_food
-    
+
     symbol = "₹" if "INR" in currency else "$"
     factor = 1.0 if "INR" in currency else 0.012
-    
+
     m1, m2, m3 = st.columns(3)
     m1.metric(lang["stay_exp"], f"{symbol} {int(total_stay * factor):,}")
     m2.metric(lang["food_exp"], f"{symbol} {int(total_food * factor):,}")
-    m3.metric(lang["total_exp"], f"{symbol} {int(grand_total * factor):,}", delta="- Dynamic" if "Budget" in travel_mode else "+ Luxury")
+    m3.metric(
+        lang["total_exp"],
+        f"{symbol} {int(grand_total * factor):,}",
+        delta="- Dynamic" if "Budget" in travel_mode else "+ Luxury",
+    )
 
     st.divider()
 
@@ -307,7 +369,7 @@ if destination != "Select a city...":
         p4 = st.checkbox("Appropriate Clothes")
         p5 = st.checkbox("Emergency Medicines & First Aid kit")
         p6 = st.checkbox("Sunscreen & Essential Toiletries")
-        
+
     if p1 and p2 and p3 and p4 and p5 and p6:
         st.balloons()
 
