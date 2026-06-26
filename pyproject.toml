@@ -1,13 +1,12 @@
 ﻿[tool.ruff]
 line-length = 88
 target-version = "py311"
-# UP enables pyupgrade checks natively within Ruff
 select = ["E", "F", "B", "I", "UP", "PL"]
+
+[tool.ruff.lint]
+select = ["UP"]
 
 [tool.vulture]
 min_confidence = 80
 paths = ["app.py"]
 exclude = [".venv", "venv"]
-
-[tool.pylint]
-max-line-length = 88
