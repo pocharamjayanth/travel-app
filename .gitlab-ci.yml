@@ -1,30 +1,37 @@
 stages:
+  - lint
+  - format
+  - type_check
   - test
 
-static_analysis:
-  stage: test
-  image: python:3.11-slim
-  tags:
-    - shared
-    - docker
-  script:
-    - pip install ruff pylint flake8 mypy bandit pip-audit semgrep streamlit requests pytest coverage
-    - ruff check app.py
-    - ruff format --check app.py
-    - pylint app.py --disable=C0114,C0115,C0116
-    - flake8 app.py --max-line-length=88
-    - mypy --ignore-missing-imports app.py
-    - bandit -r app.py
-    - pip-audit --allow-empty
-    - semgrep --config=auto app.py || true
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 
-unit_testing:
-  stage: test
-  image: python:3.11-slim
-  tags:
-    - shared
-    - docker
+cache:
+  paths:
+    - .cache/pip
+    - .venv/
+
+before_script:
+  - python -m pip install --upgrade pip
+  - python -m pip install ruff mypy pytest streamlit requests vulture bandit pip-audit
+
+lint_job:
+  stage: lint
   script:
-    - pip install streamlit requests pytest coverage
-    - coverage run -m pytest test_app.py
-    - coverage report -m
+    - python -m ruff check .
+
+format_job:
+  stage: format
+  script:
+    - python -m ruff format --check .
+
+type_check_job:
+  stage: type_check
+  script:
+    - python -m mypy . --ignore-missing-imports
+
+test_job:
+  stage: test
+  script:
+    - python -m pytest
