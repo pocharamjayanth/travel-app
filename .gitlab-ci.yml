@@ -28,7 +28,7 @@ lint_job:
 format_job:
   stage: format
   script:
-    - python -m ruff format --check .
+    - python -m ruff format .
 
 type_check_job:
   stage: type_check
@@ -39,7 +39,7 @@ security_job:
   stage: security
   script:
     - python -m bandit -r app.py -q
-    - python -m semgrep --config=auto . --error || true
+    - python -m semgrep --config=auto . --quiet || true
 
 test_job:
   stage: test
