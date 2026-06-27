@@ -3,6 +3,7 @@ line-length = 88
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
+ignore = ["E501"] # Ignore long string translations in app.py
 
 [tool.vulture]
 min_confidence = 80

@@ -1,6 +1,5 @@
-import streamlit as st
 import requests
-import json
+import streamlit as st
 
 # Set up page configuration
 st.set_page_config(page_title="Global Travel Planner", page_icon="🗺️", layout="wide")
