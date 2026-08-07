@@ -1,5 +1,7 @@
 import requests
 import streamlit as st
+from google import genai
+from google.genai.errors import APIError
 
 # Set up page configuration
 st.set_page_config(page_title="Global Travel Planner", page_icon="🗺️", layout="wide")
@@ -34,10 +36,7 @@ translations = {
         "ai_prompt_lbl": "Ask the AI Companion anything about planning your trip to {city}:",
         "ai_btn": "Generate Custom AI Insights",
         "ai_setup": "🤖 AI Engine Configuration",
-        "ai_mode_lbl": "Select AI Architecture Execution Mode:",
-        "byok_key_lbl": "Enter Your OpenAI API Key:",
-        "ollama_url_lbl": "Ollama Local Host Endpoint URL:",
-        "ollama_model_lbl": "Target Local Model Name:",
+        "byok_key_lbl": "Enter Your Google Gemini API Key:",
     },
     "Hindi": {
         "title": "🗺️ सर्वश्रेष्ठ शहर यात्रा गाइड और योजनाकार",
@@ -65,10 +64,7 @@ translations = {
         "ai_prompt_lbl": "{city} की अपनी यात्रा की योजना बनाने के बारे में एआई से कुछ भी पूछें:",
         "ai_btn": "कस्टम एआई अंतर्दृष्टि उत्पन्न करें",
         "ai_setup": "🤖 एआई इंजन कॉन्फ़िगरेशन",
-        "ai_mode_lbl": "एआई आर्किटेक्चर निष्पादन मोड चुनें:",
-        "byok_key_lbl": "अपना OpenAI API कुंजी दर्ज करें:",
-        "ollama_url_lbl": "ओलामा लोकल होस्ट एंडपॉइंट URL:",
-        "ollama_model_lbl": "लक्षित स्थानीय मॉडल का नाम:",
+        "byok_key_lbl": "अपना Google Gemini API कुंजी दर्ज करें:",
     },
     "Telugu": {
         "title": "🗺️ అల్టిమేట్ సిటీ ట్రావెల్ గైడ్ & ప్లానర్",
@@ -96,10 +92,7 @@ translations = {
         "ai_prompt_lbl": "{city} ప్రయాణ ప్రణాళిక గురించి AI సహాయకుడిని ఏదైనా అడగండి:",
         "ai_btn": "కస్టమ్ AI సమాధానాన్ని పొందండి",
         "ai_setup": "🤖 AI కాన్ఫిగరేషన్",
-        "ai_mode_lbl": "AI ఆర్కిటెక్చర్ మోడ్‌ను ఎంచుకోండి:",
-        "byok_key_lbl": "మీ OpenAI API కీని నమోదు చేయండి:",
-        "ollama_url_lbl": "ఒల్లామా లోకల్ హోస్ట్ URL:",
-        "ollama_model_lbl": "లోకల్ మోడల్ పేరు:",
+        "byok_key_lbl": "మీ Google Gemini API కీని నమోదు చేయండి:",
     },
     "Spanish": {
         "title": "🗺️ Guía y Planificador Definitivo de Viajes",
@@ -127,46 +120,28 @@ translations = {
         "ai_prompt_lbl": "Pregúntele al compañero de IA lo que sea sobre la planificación de su viaje a {city}:",
         "ai_btn": "Generar información personalizada de IA",
         "ai_setup": "🤖 Configuración del motor de IA",
-        "ai_mode_lbl": "Seleccione el modo de ejecución de la arquitectura de IA:",
-        "byok_key_lbl": "Ingrese su clave API de OpenAI:",
-        "ollama_url_lbl": "URL del endpoint local de Ollama:",
-        "ollama_model_lbl": "Nombre del modelo local de destino:",
+        "byok_key_lbl": "Ingrese su clave API de Google Gemini:",
     },
 }
 
 
 # ==========================================
-# 🤖 UNIFIED AI GATEWAY INFRASTRUCTURE
+# 🤖 GEMINI AI GATEWAY INFRASTRUCTURE
 # ==========================================
-def query_ai_engine(mode, prompt, api_key, ollama_url, ollama_model):
-    payload = {"messages": [{"role": "user", "content": prompt}], "temperature": 0.7}
-
-    if mode == "✨ Cloud API (BYOK - OpenAI)":
-        if not api_key:
-            return (
-                "⚠️ Please supply a valid OpenAI API key in the configuration sidebar."
-            )
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        }
-        url = "https://api.openai.com/v1/chat/completions"
-        payload["model"] = "gpt-4o-mini"
-    else:
-        url = f"{ollama_url.strip('/')}/v1/chat/completions"
-        headers = {"Content-Type": "application/json"}
-        payload["model"] = ollama_model
+def query_gemini_engine(prompt, api_key):
+    if not api_key.strip():
+        return "⚠️ Please supply a valid Google Gemini API key in the configuration sidebar."
 
     try:
-        response = requests.post(url, headers=headers, json=payload, timeout=30)
-        if response.status_code == 200:
-            return response.json()["choices"][0]["message"]["content"]
-        else:
-            return f"❌ API Error (Status Code {response.status_code}): {response.text}"
-    except requests.exceptions.ConnectionError:
-        if mode == "🎒 Local Inference (Ollama)":
-            return f"❌ Failed to connect to Ollama. Ensure Ollama is running locally at {ollama_url} and your model is pulled (run: `ollama run {ollama_model}`)."
-        return "❌ Connection timeout. Please verify your internet network link."
+        # Initialize Google GenAI client
+        client = genai.Client(api_key=api_key.strip())
+        response = client.models.generate_content(
+            model="gemini-3.5-flash",
+            contents=prompt,
+        )
+        return response.text
+    except APIError as e:
+        return f"❌ Gemini API Error: {e.message}"
     except Exception as e:
         return f"❌ Encountered unexpected runtime exception: {str(e)}"
 
@@ -188,21 +163,14 @@ currency = st.sidebar.selectbox(lang["currency_lbl"], ["INR (₹)", "USD ($)"])
 
 st.sidebar.divider()
 st.sidebar.header(lang["ai_setup"])
-ai_mode = st.sidebar.radio(
-    lang["ai_mode_lbl"], ["🎒 Local Inference (Ollama)", "✨ Cloud API (BYOK - OpenAI)"]
+st.sidebar.markdown(
+    "Get a free Gemini API key at [Google AI Studio](https://aistudio.google.com/app/apikey)."
 )
-
-api_key = ""
-ollama_url = "http://localhost:11434"
-ollama_model = "llama3"
-
-if ai_mode == "✨ Cloud API (BYOK - OpenAI)":
-    api_key = st.sidebar.text_input(lang["byok_key_lbl"], type="password")
-else:
-    ollama_url = st.sidebar.text_input(
-        lang["ollama_url_lbl"], value="http://localhost:11434"
-    )
-    ollama_model = st.sidebar.text_input(lang["ollama_model_lbl"], value="llama3")
+gemini_api_key = st.sidebar.text_input(
+    lang["byok_key_lbl"],
+    type="password",
+    help="Paste key starting with AIzaSy...",
+)
 
 # ==========================================
 # 🏙️ MAIN APP RENDER LAYER
@@ -318,10 +286,8 @@ if destination != "Select a city...":
     )
 
     if st.button(lang["ai_btn"]):
-        with st.spinner("🧠 Querying AI Engine Inference Pipeline..."):
-            ai_response = query_ai_engine(
-                ai_mode, ai_prompt, api_key, ollama_url, ollama_model
-            )
+        with st.spinner("🧠 Querying Gemini AI Engine Pipeline..."):
+            ai_response = query_gemini_engine(ai_prompt, gemini_api_key)
             st.markdown("### 💬 AI Travel Planner Response:")
             st.write(ai_response)
 
